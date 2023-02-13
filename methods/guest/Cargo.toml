@@ -10,3 +10,4 @@ risc0-build = "0.12"
 
 [dependencies]
 risc0-zkvm = { version = "0.12", default-features = false }
+evm-runner = { path = "../../evm-runner" }

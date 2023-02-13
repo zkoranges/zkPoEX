@@ -1,5 +1,5 @@
 [package]
-name = "starter"
+name = "host"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,3 +7,4 @@ edition = "2021"
 methods = { path = "../methods" }
 risc0-zkvm = "0.12"
 serde = "1.0"
+hex = { version = "0.4" }
