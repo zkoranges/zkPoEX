@@ -34,10 +34,11 @@ To use the project, you will need to have the following installed on your system
 $ just prove
 ```
 
-## Contributing
-
-Contributions to the project are welcome and encouraged. To contribute, fork the project on GitHub, make your changes, and submit a pull request.
-
 ## Acknowledgements:
 
 We would like to thank Maciej Zieliński for providing an example in his [blog post](https://odra.dev/blog/evm-at-risc0/) of how to run Solidity code inside SputnikVM inside Risc0. 
+
+
+## Contributing
+
+Contributions to the project are welcome and encouraged. To contribute, fork the project on GitHub, make your changes, and submit a pull request.
