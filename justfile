@@ -4,7 +4,7 @@ compile-contract:
         --overwrite \
         --evm-version istanbul \
         --output-dir bytecode \
-        bytecode/Calculator.sol  
+        bytecode/Wrapper.sol  
 
 test-evm-runtime: compile-contract
     cargo test -p evm-runner
