@@ -3,15 +3,10 @@ use risc0_zkvm::Prover;
 use risc0_zkvm::serde::{from_slice, to_vec};
 
 fn main() {
-    println!("Proving Calculator.add(7, 2)");
-    let input = "771602f700000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000002";
+    println!("Proving state change after hack tx");
+    let input = ",.";
     let result = run_prover(input);
-    println!("Proof generated. 7 + 2 = {result}");
-    
-    println!("Proving Calculator.fibonacci(4)");
-    let input = "61047ff40000000000000000000000000000000000000000000000000000000000000004";
-    let result = run_prover(input);
-    println!("Proof generated. fibonacci(4) = {result}");
+    println!("Proof generated. Delta = {result}");
 }
 
 fn run_prover(input: &str) -> u32 {
