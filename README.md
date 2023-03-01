@@ -26,8 +26,9 @@ The project utilizes the following technologies:
 
 To use the project, you will need to have the following installed on your system:
 
-- `Rust`
-- `Solc`
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html)
+- [Just](https://github.com/casey/just)
 
 ```bash
 $ just prove
