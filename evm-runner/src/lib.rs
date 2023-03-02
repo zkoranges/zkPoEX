@@ -17,10 +17,12 @@ use evm::{
 };
 use primitive_types::{U256, H160, H256};
 
-pub const WRAPPER_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Wrapper.bin-runtime");
+pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
+pub const TARGET_ADDRESS: &str = "0x1000000000000000000000000000000000000000";
+pub const CALLER_ADDRESS: &str = "0xf000000000000000000000000000000000000000";
 
-pub fn run_wrapper_contract(input: &str) -> String {
-    run_evm(WRAPPER_CONTRACT_EVM_PROGRAM, input)
+pub fn run_target_contract(input: &str) -> String {
+    run_evm(TARGET_CONTRACT_EVM_PROGRAM, input)
 }
 
 fn run_evm(program: &str, input: &str) -> String {
@@ -42,20 +44,20 @@ fn run_evm(program: &str, input: &str) -> String {
 	
 	let mut state = BTreeMap::new();
 
-	let mut hack_me_state = BTreeMap::new();
-	hack_me_state.insert(H256::zero(),H256::from_low_u64_be(1));
-	
+	let mut target_storage = BTreeMap::new();
+	target_storage.insert(H256::zero(),H256::from_low_u64_be(1));
+
 	state.insert(
-		H160::from_str("0x1000000000000000000000000000000000000000").unwrap(),
+		H160::from_str(TARGET_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
 			balance: U256::from(10000000),
-			storage: hack_me_state,
+			storage: target_storage,
 			code: hex::decode(program).unwrap(),
 		}
 	);
 	state.insert(
-		H160::from_str("0xf000000000000000000000000000000000000000").unwrap(),
+		H160::from_str(CALLER_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
 			balance: U256::from(10000000),
@@ -71,8 +73,8 @@ fn run_evm(program: &str, input: &str) -> String {
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
 	let (exit_reason, result) = executor.transact_call(
-		H160::from_str("0xf000000000000000000000000000000000000000").unwrap(),
-		H160::from_str("0x1000000000000000000000000000000000000000").unwrap(),
+		H160::from_str(CALLER_ADDRESS).unwrap(),
+		H160::from_str(TARGET_ADDRESS).unwrap(),
 		U256::zero(),
 		hex::decode(input).unwrap(),
 		u64::MAX,
@@ -85,48 +87,26 @@ fn run_evm(program: &str, input: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
-    #[test]
-    fn evm_version_works() {
-        let data = "54fd4d50";
-        let result = run_wrapper_contract(data);
-		assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000001");
-    }
 
     #[test]
 		fn evm_balance_works() {
 			let data = "b69ef8a8";
-			let result = run_wrapper_contract(data);
+			let result = run_target_contract(data);
 		assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000001");
 	}
 	
 	#[test]
 	fn evm_rug_works() {
 		let data = "e9be02aa";
-		let result = run_wrapper_contract(data);
+		let result = run_target_contract(data);
 	assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000000");
-}
+	}
 
-#[test]
-fn evm_fund_works() {
-	let data = "b60d4288";
-	let result = run_wrapper_contract(data);
-assert_eq!(result, "00000000000000000000000000000000000000000000d3c21bcecceda1000000");
-}
+	#[test]
+	fn evm_fund_works() {
+		let data = "b60d4288";
+		let result = run_target_contract(data);
+	assert_eq!(result, "00000000000000000000000000000000000000000000d3c21bcecceda1000000");
+	}
 
-#[test]
-fn evm_fund2_works() {
-	let data = "ca1d209d00000000000000000000000000000000000000000000d3c21bcecceda1000000";
-	let result = run_wrapper_contract(data);
-assert_eq!(result, "00000000000000000000000000000000000000000000d3c21bcecceda1000000");
-}
-
-
-#[test]
-fn delta_works() {
-	// delta(rug())
-	let data = "2734344e00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004e9be02aa00000000000000000000000000000000000000000000000000000000";
-	let result = run_wrapper_contract(data);
-assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000001");
-}
 }
