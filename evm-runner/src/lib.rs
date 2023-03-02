@@ -14,7 +14,6 @@ use evm::{
 	executor::stack::{
 		StackSubstateMetadata, MemoryStackState, StackExecutor
 	},
-	Runtime, Context
 };
 use primitive_types::{U256, H160, H256};
 
@@ -43,12 +42,12 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 	};
 
 	
-	let mut state = BTreeMap::new();
+	let mut state_btree_map = BTreeMap::new();
 
 	let mut target_storage = BTreeMap::new();
 	target_storage.insert(H256::zero(),H256::from_low_u64_be(1));
 
-	state.insert(
+	state_btree_map.insert(
 		H160::from_str(TARGET_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
@@ -57,7 +56,7 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 			code: hex::decode(program).unwrap(),
 		}
 	);
-	state.insert(
+	state_btree_map.insert(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
@@ -67,15 +66,16 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 		},
 	);
 
-	let backend = MemoryBackend::new(&vicinity, state);
+	let backend = MemoryBackend::new(&vicinity, state_btree_map);
 	let metadata = StackSubstateMetadata::new(u64::MAX, &config);
 	let state = MemoryStackState::new(metadata, &backend);
 	let precompiles = BTreeMap::new();
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
-	let before = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
-	// let before = state.storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	let mut vec = Vec::new();
 
+	let before = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	
 	let (exit_reason, result) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		H160::from_str(TARGET_ADDRESS).unwrap(),
@@ -84,16 +84,16 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 		u64::MAX,
 		Vec::new(),
 	);
+	
+	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
+	
+	let after = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
 
-    assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
-		let after = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
-		// let after = state.storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	vec.push(hex::encode(result));
+	vec.push(hex::encode(before));
+	vec.push(hex::encode(after));
 
-		let mut vec = Vec::new();
-		vec.push(hex::encode(result));
-		vec.push(hex::encode(before));
-		vec.push(hex::encode(after));
-		vec
+	vec
 }
 
 #[cfg(test)]
@@ -112,8 +112,8 @@ mod tests {
 		let data = "e9be02aa";
 		let result = run_target_contract(data);
 	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	println!("{:?}", result[1]);
-	println!("{:?}", result[2]);
+	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
 	}
 
 	#[test]
@@ -121,8 +121,8 @@ mod tests {
 		let data = "b60d4288";
 		let result = run_target_contract(data);
 	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
-	println!("{:?}", result[1]);
-	println!("{:?}", result[2]);
+	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
 	}
 
 }
