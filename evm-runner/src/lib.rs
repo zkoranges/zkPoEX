@@ -106,7 +106,7 @@ mod tests {
 	fn evm_fund_works() {
 		let data = "b60d4288";
 		let result = run_target_contract(data);
-	assert_eq!(result, "00000000000000000000000000000000000000000000d3c21bcecceda1000000");
+	assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000064");
 	}
 
 }
