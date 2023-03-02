@@ -4,9 +4,9 @@ use risc0_zkvm::serde::{from_slice, to_vec};
 
 fn main() {
     println!("Proving state change after hack tx");
-    let input = ",.";
-    let result = run_prover(input);
-    println!("Proof generated. Delta = {result}");
+    let input = "e9be02aa";
+    let result:u32 = run_prover(input);
+    println!("Proof generated. Result = {result}");
 }
 
 fn run_prover(input: &str) -> u32 {

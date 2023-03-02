@@ -5,7 +5,7 @@ contract Target {
   uint256 public balance;
 
   function fund() external returns (uint256) {
-    balance = 1_000_000e18;
+    balance = 100;
     return balance;
   }
 
