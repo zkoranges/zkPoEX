@@ -7,7 +7,7 @@ compile-contract:
         bytecode/Target.sol  
 
 test-evm-runtime: compile-contract
-    cargo test -p evm-runner
+    cargo test -p evm-runner -- --nocapture
 
 prove: compile-contract
     cargo run --release -p host
