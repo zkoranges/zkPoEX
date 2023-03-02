@@ -21,11 +21,11 @@ pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Targe
 pub const TARGET_ADDRESS: &str = "0x1000000000000000000000000000000000000000";
 pub const CALLER_ADDRESS: &str = "0xf000000000000000000000000000000000000000";
 
-pub fn run_target_contract(input: &str) -> String {
+pub fn run_target_contract(input: &str) -> Vec<String> {
     run_evm(TARGET_CONTRACT_EVM_PROGRAM, input)
 }
 
-fn run_evm(program: &str, input: &str) -> String {
+fn run_evm(program: &str, input: &str) -> Vec<String> {
     let config = Config::istanbul();
 
 	let vicinity = MemoryVicinity {
@@ -72,6 +72,8 @@ fn run_evm(program: &str, input: &str) -> String {
 	let precompiles = BTreeMap::new();
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
+	let before = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
+
 	let (exit_reason, result) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		H160::from_str(TARGET_ADDRESS).unwrap(),
@@ -80,8 +82,16 @@ fn run_evm(program: &str, input: &str) -> String {
 		u64::MAX,
 		Vec::new(),
 	);
+
     assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
-    hex::encode(result)
+		let after = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
+    // let poex = PoEX{return_value:hex::encode(result), before:hex::encode(before), after:hex::encode(after)};
+
+		let mut vec = Vec::new();
+		vec.push(hex::encode(result));
+		vec.push(hex::encode(*before));
+		vec.push(hex::encode(*after));
+		vec
 }
 
 #[cfg(test)]
@@ -92,21 +102,25 @@ mod tests {
 		fn evm_balance_works() {
 			let data = "b69ef8a8";
 			let result = run_target_contract(data);
-		assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000001");
+		assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
 	}
 	
 	#[test]
 	fn evm_rug_works() {
 		let data = "e9be02aa";
 		let result = run_target_contract(data);
-	assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000000");
+	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
+	println!("{:?}", result[1]);
+	println!("{:?}", result[2]);
 	}
 
 	#[test]
 	fn evm_fund_works() {
 		let data = "b60d4288";
 		let result = run_target_contract(data);
-	assert_eq!(result, "0000000000000000000000000000000000000000000000000000000000000064");
+	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
+	println!("{:?}", result[1]);
+	println!("{:?}", result[2]);
 	}
 
 }
