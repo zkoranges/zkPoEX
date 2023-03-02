@@ -9,11 +9,12 @@ use alloc::{vec::Vec, collections::BTreeMap, string::String};
 use evm::{
 	Config,ExitReason, ExitSucceed,
 	backend::{
-		MemoryVicinity, MemoryAccount, MemoryBackend
+		MemoryVicinity, MemoryAccount, MemoryBackend, Backend
 	},
 	executor::stack::{
 		StackSubstateMetadata, MemoryStackState, StackExecutor
-	}
+	},
+	Runtime, Context
 };
 use primitive_types::{U256, H160, H256};
 
@@ -73,6 +74,7 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
 	let before = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
+	// let before = state.storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
 
 	let (exit_reason, result) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
@@ -85,12 +87,12 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 
     assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
 		let after = backend.state().get(&H160::from_str(TARGET_ADDRESS).unwrap()).unwrap().storage.get(&H256::zero()).unwrap();
-    // let poex = PoEX{return_value:hex::encode(result), before:hex::encode(before), after:hex::encode(after)};
+		// let after = state.storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
 
 		let mut vec = Vec::new();
 		vec.push(hex::encode(result));
-		vec.push(hex::encode(*before));
-		vec.push(hex::encode(*after));
+		vec.push(hex::encode(before));
+		vec.push(hex::encode(after));
 		vec
 }
 
