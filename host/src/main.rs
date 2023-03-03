@@ -4,9 +4,9 @@ use risc0_zkvm::serde::{from_slice, to_vec};
 
 fn main() {
     println!("Proving state change after hack tx");
-    let input = "e9be02aa";
+    let input = "63d9b770"; // exploit()
     let result:Vec<String> = run_prover(input);
-    println!("Proof generated. Result = {:?}", result);
+    println!("Proof generated. Before, After = {:?}", result);
 }
 
 fn run_prover(input: &str) -> Vec<String> {
