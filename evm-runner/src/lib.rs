@@ -4,6 +4,7 @@ extern crate alloc;
 extern crate core;
 
 use core::str::FromStr;
+use crate::alloc::string::ToString;
 
 use alloc::{vec::Vec, collections::BTreeMap, string::String};
 use evm::{
@@ -13,11 +14,10 @@ use evm::{
 	},
 	executor::stack::{
 		StackSubstateMetadata, MemoryStackState, StackExecutor
-	},
+	}, Handler,
 };
 use primitive_types::{U256, H160, H256};
 use ethereum_types::{Address};
-use std::dbg;
 
 
 pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
@@ -97,10 +97,10 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	let precompiles = BTreeMap::new();
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
-	// TODO define before and after
-	// let before = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
-	
-	let (exit_reason, result) = executor.transact_call(
+	let before = executor.balance(H160::from_str(TARGET_ADDRESS).unwrap());
+	// println!("BEFORE: {:?}", before);
+
+	let (exit_reason, _) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		H160::from_str(EXPLOITER_ADDRESS).unwrap(),
 		U256::from_dec_str("1000000000000000000").unwrap(), // 1 ether - 1000000000000000000
@@ -109,18 +109,18 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 		Vec::new(),
 	);
 	
-	// dbg!(&exit_reason);
-	// println!("{:?}", exit_reason);
-	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
+	// println!("EXIT REASON: {:?}", exit_reason);
+	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Stopped));
 	
-	// let after = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	let after = executor.balance(H160::from_str(TARGET_ADDRESS).unwrap());
+	// println!("AFTER: {:?}", after);
 
 	// define outputs of the simulation
 	let mut outputs = Vec::new();
 	
-	outputs.push(hex::encode(result));
-	// outputs.push(hex::encode(before));
-	// outputs.push(hex::encode(after));
+	// outputs.push(hex::encode(result));
+	outputs.push(before.to_string());
+	outputs.push(after.to_string());
 
 	outputs
 }
@@ -128,46 +128,15 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 #[cfg(test)]
 mod tests {
     use super::*;
-
-  //   #[test]
-	// 	fn evm_balance_works() {
-	// 		let data = "b69ef8a8";
-	// 		let result = run_simulation(data);
-	
-	// 		println!("{:?}", result);
-	// 	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
-	// }
 	
 	#[test]
 	fn evm_exploit_works() {
+		// after running exploit() function, 
 		let func_selector = "63d9b770"; // exploit()
 		let result = run_simulation(func_selector);
 		println!("Result: {:?}", result);
-	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	// assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
+		assert_eq!(result[0], "10000000000000000000"); // target should have 10 ethers before the exploit
+		assert_eq!(result[1], "0"); // target should have 0 after the exploit
 	}
-
-	// #[test]
-	// fn evm_balance_works() {
-	// 	let func_selector = "b69ef8a8"; // balance
-	// 	let result = run_simulation(func_selector);
-	// 	println!("Result: {:?}", result);
-	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	// // assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	// // assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
-	// }
-
-	
-
-	// #[test]
-	// fn evm_fund_works() {
-	// 	let data = "b60d4288";
-	// 	let result = run_simulation(data);
-	// 	println!("{:?}", result);
-	// // assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
-	// // assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	// // assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
-	// }
 
 }
