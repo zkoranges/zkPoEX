@@ -15,6 +15,7 @@ contract Target {
     return balances[_who];
   }
 
+  // This function has a reentrancy vulnerability
   function withdraw(uint _amount) public {
     if(balances[msg.sender] >= _amount) {
       (bool result,) = msg.sender.call{value:_amount}("");
