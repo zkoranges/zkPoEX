@@ -115,7 +115,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	let after = executor.balance(H160::from_str(TARGET_ADDRESS).unwrap());
 	// println!("AFTER: {:?}", after);
 
-	// define outputs of the simulation
+	// simulataion outputs: the before and after hack balance of ETH of the target
 	let mut outputs = Vec::new();
 	
 	// outputs.push(hex::encode(result));
@@ -131,7 +131,6 @@ mod tests {
 	
 	#[test]
 	fn evm_exploit_works() {
-		// after running exploit() function, 
 		let func_selector = "63d9b770"; // exploit()
 		let result = run_simulation(func_selector);
 		println!("Result: {:?}", result);
