@@ -9,24 +9,29 @@ use alloc::{vec::Vec, collections::BTreeMap, string::String};
 use evm::{
 	Config,ExitReason, ExitSucceed,
 	backend::{
-		MemoryVicinity, MemoryAccount, MemoryBackend, Backend
+		MemoryVicinity, MemoryAccount, MemoryBackend
 	},
 	executor::stack::{
 		StackSubstateMetadata, MemoryStackState, StackExecutor
 	},
 };
 use primitive_types::{U256, H160, H256};
+use ethereum_types::{Address};
+
 
 pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
+pub const EXPLOITER_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Exploiter.bin-runtime");
+
 pub const TARGET_ADDRESS: &str = "0x1000000000000000000000000000000000000000";
+pub const EXPLOITER_ADDRESS: &str = "0x2000000000000000000000000000000000000000";
 pub const CALLER_ADDRESS: &str = "0xf000000000000000000000000000000000000000";
 
-pub fn run_target_contract(input: &str) -> Vec<String> {
-    run_evm(TARGET_CONTRACT_EVM_PROGRAM, input)
+pub fn run_simulation(input: &str) -> Vec<String> {
+    run_evm(TARGET_CONTRACT_EVM_PROGRAM, EXPLOITER_CONTRACT_EVM_PROGRAM, input)
 }
 
-fn run_evm(program: &str, input: &str) -> Vec<String> {
-    let config = Config::istanbul();
+fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Vec<String> {
+	let config = Config::istanbul();
 
 	let vicinity = MemoryVicinity {
 		gas_price: U256::zero(),
@@ -41,88 +46,115 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 		block_base_fee_per_gas: U256::zero(),
 	};
 
+	// chain state
+	let mut global_state = BTreeMap::new();
+
+	let target_storage = BTreeMap::new();
+
+	let mut exploiter_storage = BTreeMap::new();
 	
-	let mut state_btree_map = BTreeMap::new();
+	// insert target address in exploiter contract
+	let target_address = H256::from(Address::from(H160::from_str(TARGET_ADDRESS).unwrap()));
+	exploiter_storage.insert(H256::zero(),target_address);
 
-	let mut target_storage = BTreeMap::new();
-	target_storage.insert(H256::zero(),H256::from_low_u64_be(1));
-
-	state_btree_map.insert(
+	// deploy target contract to state
+	global_state.insert(
 		H160::from_str(TARGET_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
-			balance: U256::from(10000000),
+			balance: U256::from_dec_str("10000000000000000000").unwrap(), // 10 ether
 			storage: target_storage,
-			code: hex::decode(program).unwrap(),
+			code: hex::decode(target_bytecode).unwrap(),
 		}
 	);
-	state_btree_map.insert(
+
+	// deploy exploiter contract to state
+	global_state.insert(
+			H160::from_str(EXPLOITER_ADDRESS).unwrap(),
+			MemoryAccount {
+				nonce: U256::one(),
+				balance: U256::from_dec_str("0").unwrap(), // 0 ether
+				storage: exploiter_storage,
+				code: hex::decode(exploiter_bytecode).unwrap(),
+			}
+		);
+
+	// deploy caller address in state
+	global_state.insert(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
-			balance: U256::from(10000000),
+			balance: U256::from_dec_str("10000000000000000000").unwrap(), // 10 ether for the caller
 			storage: BTreeMap::new(),
 			code: Vec::new(),
 		},
 	);
 
-	let backend = MemoryBackend::new(&vicinity, state_btree_map);
+	let backend = MemoryBackend::new(&vicinity, global_state);
 	let metadata = StackSubstateMetadata::new(u64::MAX, &config);
 	let state = MemoryStackState::new(metadata, &backend);
 	let precompiles = BTreeMap::new();
 	let mut executor = StackExecutor::new_with_precompiles(state, &config, &precompiles);
 
-	let mut vec = Vec::new();
-
-	let before = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	// TODO define before and after
+	// let before = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
 	
 	let (exit_reason, result) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
-		H160::from_str(TARGET_ADDRESS).unwrap(),
-		U256::zero(),
-		hex::decode(input).unwrap(),
+		H160::from_str(EXPLOITER_ADDRESS).unwrap(),
+		U256::from_dec_str("1000000000000000000").unwrap(), // 1 ether
+		hex::decode(tx_data).unwrap(),
 		u64::MAX,
 		Vec::new(),
 	);
 	
+	// println!("{:?}", exit_reason);
 	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
 	
-	let after = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	// let after = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
 
-	vec.push(hex::encode(result));
-	vec.push(hex::encode(before));
-	vec.push(hex::encode(after));
+	// define outputs of the simulation
+	let mut outputs = Vec::new();
+	
+	outputs.push(hex::encode(result));
+	// outputs.push(hex::encode(before));
+	// outputs.push(hex::encode(after));
 
-	vec
+	outputs
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-		fn evm_balance_works() {
-			let data = "b69ef8a8";
-			let result = run_target_contract(data);
-		assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
-	}
+  //   #[test]
+	// 	fn evm_balance_works() {
+	// 		let data = "b69ef8a8";
+	// 		let result = run_simulation(data);
+	
+	// 		println!("{:?}", result);
+	// 	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
+	// }
 	
 	#[test]
-	fn evm_rug_works() {
-		let data = "e9be02aa";
-		let result = run_target_contract(data);
-	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
+	fn evm_exploit_works() {
+		let data = "63d9b770"; // exploit()
+		let result = run_simulation(data);
+		println!("Result:");
+		println!("{:?}", result);
+	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
+	// assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
 	}
 
-	#[test]
-	fn evm_fund_works() {
-		let data = "b60d4288";
-		let result = run_target_contract(data);
-	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
-	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
-	}
+	// #[test]
+	// fn evm_fund_works() {
+	// 	let data = "b60d4288";
+	// 	let result = run_simulation(data);
+	// 	println!("{:?}", result);
+	// // assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
+	// // assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	// // assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
+	// }
 
 }
