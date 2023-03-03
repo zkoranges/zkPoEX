@@ -5,8 +5,8 @@ use risc0_zkvm::serde::{from_slice, to_vec};
 fn main() {
     println!("Proving state change after hack tx...");
     let input = "63d9b770"; // exploit()
-    run_prover(input);
-    // println!("Proof generated. Receipt = {:?}", receipt);
+    let result = run_prover(input);
+    println!("Results: there's a certain tx that makes target contract eth balance go [from, to] = {:?}", result);
 }
 
 fn run_prover(input: &str) -> Vec<String>{
