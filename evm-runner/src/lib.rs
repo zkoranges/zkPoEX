@@ -63,7 +63,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 		H160::from_str(TARGET_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
-			balance: U256::from_dec_str("10000000000000000000").unwrap(), // 10 ether
+			balance: U256::from_dec_str("2000000000000000000").unwrap(), // 2 ether
 			storage: target_storage,
 			code: hex::decode(target_bytecode).unwrap(),
 		}
@@ -133,7 +133,7 @@ mod tests {
 		let func_selector = "63d9b770"; // exploit()
 		let result = run_simulation(func_selector);
 		println!("Result: {:?}", result);
-		assert_eq!(result[0], "10000000000000000000"); // target should have 10 ethers before the exploit
+		assert_eq!(result[0], "2000000000000000000"); // target should have 10 ethers before the exploit
 		assert_eq!(result[1], "0"); // target should have 0 after the exploit
 	}
 
