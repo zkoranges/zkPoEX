@@ -118,7 +118,6 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	// simulataion outputs: the before and after hack balance of ETH of the target
 	let mut outputs = Vec::new();
 	
-	// outputs.push(hex::encode(result));
 	outputs.push(before.to_string());
 	outputs.push(after.to_string());
 
