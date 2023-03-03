@@ -102,7 +102,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	let (exit_reason, result) = executor.transact_call(
 		H160::from_str(CALLER_ADDRESS).unwrap(),
 		H160::from_str(EXPLOITER_ADDRESS).unwrap(),
-		U256::from_dec_str("1000000000000000000").unwrap(), // 1 ether
+		U256::from_dec_str("1000000000000000000").unwrap(), // 1 ether - 1000000000000000000
 		hex::decode(tx_data).unwrap(),
 		u64::MAX,
 		Vec::new(),
@@ -138,14 +138,25 @@ mod tests {
 	
 	#[test]
 	fn evm_exploit_works() {
-		let data = "63d9b770"; // exploit()
-		let result = run_simulation(data);
-		println!("Result:");
-		println!("{:?}", result);
+		let func_selector = "63d9b770"; // exploit()
+		let result = run_simulation(func_selector);
+		println!("Result: {:?}", result);
 	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
 	// assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
 	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
 	}
+
+	#[test]
+	fn evm_balance_works() {
+		let func_selector = "b69ef8a8"; // balance
+		let result = run_simulation(func_selector);
+		println!("Result: {:?}", result);
+	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
+	// assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
+	}
+
+	
 
 	// #[test]
 	// fn evm_fund_works() {
