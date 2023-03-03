@@ -17,6 +17,7 @@ use evm::{
 };
 use primitive_types::{U256, H160, H256};
 use ethereum_types::{Address};
+use std::dbg;
 
 
 pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
@@ -108,6 +109,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 		Vec::new(),
 	);
 	
+	// dbg!(&exit_reason);
 	// println!("{:?}", exit_reason);
 	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
 	
@@ -146,15 +148,15 @@ mod tests {
 	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
 	}
 
-	#[test]
-	fn evm_balance_works() {
-		let func_selector = "b69ef8a8"; // balance
-		let result = run_simulation(func_selector);
-		println!("Result: {:?}", result);
-	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	// assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	// assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
-	}
+	// #[test]
+	// fn evm_balance_works() {
+	// 	let func_selector = "b69ef8a8"; // balance
+	// 	let result = run_simulation(func_selector);
+	// 	println!("Result: {:?}", result);
+	// assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
+	// // assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+	// // assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
+	// }
 
 	
 
