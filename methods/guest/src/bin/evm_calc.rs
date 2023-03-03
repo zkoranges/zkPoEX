@@ -10,8 +10,11 @@ use evm_runner::run_target_contract;
 risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
-    let input: String = env::read();
-    let result = run_target_contract(&input);
+    let target_bytecode: String = env::read();
+    let target_address: String = env::read();
+    let caller_address: String = env::read();
+    let calldata: String = env::read();
+    let result = run_target_contract(&target_bytecode, &target_address, &caller_address, &calldata);
     env::commit(&result);
 }
     
