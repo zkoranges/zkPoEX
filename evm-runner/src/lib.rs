@@ -78,11 +78,15 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 		}
 	);
 
+	// constraint: exploiter has nonce 1
+	let exploiter_nonce = U256::one();
+	assert!(exploiter_nonce == U256::one());
+
 	// deploy exploiter contract to state
 	global_state.insert(
 			H160::from_str(EXPLOITER_ADDRESS).unwrap(),
 			MemoryAccount {
-				nonce: U256::one(),
+				nonce: exploiter_nonce,
 				balance: U256::from_dec_str("0").unwrap(), // 0 ether
 				storage: exploiter_storage,
 				code: hex::decode(exploiter_bytecode).unwrap(),
@@ -119,6 +123,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	);
 	
 	// println!("EXIT REASON: {:?}", exit_reason);
+	// constraint: transaction succeeded
 	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Stopped));
 	
 	let after = executor.balance(H160::from_str(TARGET_ADDRESS).unwrap());
@@ -137,6 +142,11 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	let hash = hasher.finalize();
 	let hash_str = hex::encode(hash.to_vec());
 	//println!("Hash as string: {}", hash_str);
+
+	// constraint: caller address, target address and exploiter address are different
+	assert!(CALLER_ADDRESS != TARGET_ADDRESS);
+	assert!(CALLER_ADDRESS != EXPLOITER_ADDRESS);
+	assert!(TARGET_ADDRESS != EXPLOITER_ADDRESS);
 
 	// simulataion outputs: the before and after hack balance of ETH of the target
 	let mut outputs = Vec::new();
