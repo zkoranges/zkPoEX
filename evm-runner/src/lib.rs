@@ -17,15 +17,26 @@ use evm::{
 };
 use primitive_types::{U256, H160, H256};
 
-pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
-pub const TARGET_ADDRESS: &str = "0x1000000000000000000000000000000000000000";
-pub const CALLER_ADDRESS: &str = "0xf000000000000000000000000000000000000000";
-
-pub fn run_target_contract(input: &str) -> Vec<String> {
-    run_evm(TARGET_CONTRACT_EVM_PROGRAM, input)
+pub fn run_target_contract(
+	target_bytecode: &str,
+	target_address: &str,
+	caller_address: &str,
+	calldata: &str
+) -> Vec<String> {
+    run_evm(
+		target_bytecode,
+		target_address,
+		caller_address,
+		calldata
+	)
 }
 
-fn run_evm(program: &str, input: &str) -> Vec<String> {
+fn run_evm(
+	target_bytecode: &str,
+	target_address: &str,
+	caller_address: &str,
+	calldata: &str
+) -> Vec<String> {
     let config = Config::istanbul();
 
 	let vicinity = MemoryVicinity {
@@ -48,16 +59,16 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 	target_storage.insert(H256::zero(),H256::from_low_u64_be(1));
 
 	state_btree_map.insert(
-		H160::from_str(TARGET_ADDRESS).unwrap(),
+		H160::from_str(target_address).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
 			balance: U256::from(10000000),
 			storage: target_storage,
-			code: hex::decode(program).unwrap(),
+			code: hex::decode(target_bytecode).unwrap(),
 		}
 	);
 	state_btree_map.insert(
-		H160::from_str(CALLER_ADDRESS).unwrap(),
+		H160::from_str(caller_address).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
 			balance: U256::from(10000000),
@@ -74,20 +85,20 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 
 	let mut vec = Vec::new();
 
-	let before = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	let before = executor.state().storage(H160::from_str(target_address).unwrap(), H256::zero());
 	
 	let (exit_reason, result) = executor.transact_call(
-		H160::from_str(CALLER_ADDRESS).unwrap(),
-		H160::from_str(TARGET_ADDRESS).unwrap(),
+		H160::from_str(caller_address).unwrap(),
+		H160::from_str(target_address).unwrap(),
 		U256::zero(),
-		hex::decode(input).unwrap(),
+		hex::decode(calldata).unwrap(),
 		u64::MAX,
 		Vec::new(),
 	);
 	
 	assert!(exit_reason == ExitReason::Succeed(ExitSucceed::Returned));
 	
-	let after = executor.state().storage(H160::from_str(TARGET_ADDRESS).unwrap(), H256::zero());
+	let after = executor.state().storage(H160::from_str(target_address).unwrap(), H256::zero());
 
 	vec.push(hex::encode(result));
 	vec.push(hex::encode(before));
@@ -100,26 +111,30 @@ fn run_evm(program: &str, input: &str) -> Vec<String> {
 mod tests {
     use super::*;
 
+    const target_bytecode: &str = include_str!("../../bytecode/Target.bin-runtime");
+    const target_address: &str = "0x1000000000000000000000000000000000000000";
+    const caller_address: &str = "0xf000000000000000000000000000000000000000";
+
     #[test]
 		fn evm_balance_works() {
-			let data = "b69ef8a8";
-			let result = run_target_contract(data);
-		assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
-	}
-	
-	#[test]
-	fn evm_rug_works() {
-		let data = "e9be02aa";
-		let result = run_target_contract(data);
-	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
-	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
-	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
-	}
-
-	#[test]
-	fn evm_fund_works() {
-		let data = "b60d4288";
-		let result = run_target_contract(data);
+			let calldata = "b69ef8a8";
+			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
+			assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
+		}
+		
+		#[test]
+		fn evm_rug_works() {
+			let calldata = "e9be02aa";
+			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
+			assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
+			assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
+			assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
+		}
+		
+		#[test]
+		fn evm_fund_works() {
+			let calldata = "b60d4288";
+			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
 	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
 	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
 	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
