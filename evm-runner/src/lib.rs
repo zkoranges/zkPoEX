@@ -111,21 +111,21 @@ fn run_evm(
 mod tests {
     use super::*;
 
-    const target_bytecode: &str = include_str!("../../bytecode/Target.bin-runtime");
-    const target_address: &str = "0x1000000000000000000000000000000000000000";
-    const caller_address: &str = "0xf000000000000000000000000000000000000000";
+    const TARGET_BYTECODE: &str = include_str!("../../bytecode/Target.bin-runtime");
+    const TARGET_ADDRESS: &str = "0x1000000000000000000000000000000000000000";
+    const CALLER_ADDRESS: &str = "0xf000000000000000000000000000000000000000";
 
     #[test]
 		fn evm_balance_works() {
 			let calldata = "b69ef8a8";
-			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
+			let result = run_target_contract(TARGET_BYTECODE, TARGET_ADDRESS, CALLER_ADDRESS, calldata);
 			assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000001");
 		}
 		
 		#[test]
 		fn evm_rug_works() {
 			let calldata = "e9be02aa";
-			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
+			let result = run_target_contract(TARGET_BYTECODE, TARGET_ADDRESS, CALLER_ADDRESS, calldata);
 			assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000000");
 			assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
 			assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000000");
@@ -134,7 +134,7 @@ mod tests {
 		#[test]
 		fn evm_fund_works() {
 			let calldata = "b60d4288";
-			let result = run_target_contract(target_bytecode, target_address, caller_address, calldata);
+			let result = run_target_contract(TARGET_BYTECODE, TARGET_ADDRESS, CALLER_ADDRESS, calldata);
 	assert_eq!(result[0], "0000000000000000000000000000000000000000000000000000000000000064");
 	assert_eq!(result[1], "0000000000000000000000000000000000000000000000000000000000000001");
 	assert_eq!(result[2], "0000000000000000000000000000000000000000000000000000000000000064");
