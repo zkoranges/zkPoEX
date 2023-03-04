@@ -19,7 +19,6 @@ Since the auditor is not giving away the exploit, the project is incentivized to
 
 The project utilizes the following technologies:
 
--   [Solidity](https://soliditylang.org/): A high-level programming language used to develop smart contracts on the Ethereum blockchain.
 -   [SputnikVM](https://sputnikvm.com/): A high-performance, modular virtual machine for executing Ethereum smart contracts.
 -   [Risc0](https://risc-0.com/): A General Purpose Zero-Knowledge VM that allows to prove and verify any computation. The RISC Zero ZKVM is a verifiable computer that works like a real embedded RISC-V microprocessor, enabling programmers to write ZK proofs like they write any other code.
 -   [Zero-Knowledge Proofs](https://en.wikipedia.org/wiki/Zero-knowledge_proof): A cryptographic technique that allows one party to prove to another party that a statement is true, without revealing any additional information beyond the fact that the statement is true.
@@ -32,6 +31,11 @@ To use the project, you will need to have the following installed on your system
 - [Solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html)
 - [Just](https://github.com/casey/just)
 
+To test the evm :
+```bash
+$ test-evm
+```
+To generate proof (and verify) :
 ```bash
 $ just prove
 ```

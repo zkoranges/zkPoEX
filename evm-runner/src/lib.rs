@@ -51,9 +51,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 
 	// chain state
 	let mut global_state = BTreeMap::new();
-
 	let target_storage = BTreeMap::new();
-
 	let mut exploiter_storage = BTreeMap::new();
 	
 	// insert target address in exploiter contract
@@ -74,7 +72,7 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 		H160::from_str(TARGET_ADDRESS).unwrap(),
 		MemoryAccount {
 			nonce: U256::one(),
-			balance: U256::from_dec_str("2000000000000000000").unwrap(), // 2 ether
+			balance: U256::from_dec_str("1000000000000000000").unwrap(), // 1 ether
 			storage: target_storage,
 			code: hex::decode(target_bytecode).unwrap(),
 		}
@@ -159,7 +157,7 @@ mod tests {
 		let func_selector = "63d9b770"; // exploit()
 		let result = run_simulation(func_selector);
 		println!("Result: {:?}", result);
-		assert_eq!(result[0], "2000000000000000000"); // target should have 10 ethers before the exploit
+		assert_eq!(result[0], "1000000000000000000"); // target should have 1 ethers before the exploit
 		assert_eq!(result[1], "0"); // target should have 0 after the exploit
 		assert_eq!(result[2], "9a68fde8bf1c116a2f268c7e838b8a561779dccf9d8284b7f9c1e06871fbecc5"); // hash of private inputs is correct
 	}
