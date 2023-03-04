@@ -156,7 +156,7 @@ mod tests {
 	fn evm_exploit_works() {
 		let func_selector = "63d9b770"; // exploit()
 		let result = run_simulation(func_selector);
-		println!("Result: {:?}", result);
+		println!("Result [Balance before tx, Balance after tx, Hash of private outputs]: {:?}", result);
 		assert_eq!(result[0], "1000000000000000000"); // target should have 1 ethers before the exploit
 		assert_eq!(result[1], "0"); // target should have 0 after the exploit
 		assert_eq!(result[2], "9a68fde8bf1c116a2f268c7e838b8a561779dccf9d8284b7f9c1e06871fbecc5"); // hash of private inputs is correct
