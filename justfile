@@ -6,7 +6,7 @@ compile-contract:
         --output-dir bytecode \
         bytecode/Target.sol  
 
-test-evm-runtime: compile-contract
+test-evm: compile-contract
     cargo test -p evm-runner -- --nocapture
 
 prove: compile-contract
