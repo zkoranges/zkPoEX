@@ -6,7 +6,7 @@ extern crate core;
 use core::str::FromStr;
 use crate::alloc::string::ToString;
 
-use alloc::{vec::Vec, collections::BTreeMap, string::String};
+use alloc::{vec::Vec, collections::BTreeMap, string::String, format};
 use evm::{
 	Config,ExitReason, ExitSucceed,
 	backend::{
@@ -18,6 +18,8 @@ use evm::{
 };
 use primitive_types::{U256, H160, H256};
 use ethereum_types::{Address};
+use sha3::{Digest, Keccak256};
+use hex::encode;
 
 
 pub const TARGET_CONTRACT_EVM_PROGRAM: &str = include_str!("../../bytecode/Target.bin-runtime");
@@ -57,6 +59,15 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	// insert target address in exploiter contract
 	let target_address = H256::from(Address::from(H160::from_str(TARGET_ADDRESS).unwrap()));
 	exploiter_storage.insert(H256::zero(),target_address);
+
+	// formats the exploiter state binary tree map as a string for future hashing
+    let mut concat_exploiter_btreemap = String::new();
+	concat_exploiter_btreemap += "[";
+    for (key, value) in &exploiter_storage {
+		concat_exploiter_btreemap += &format!("[{},{}]", encode(key.as_bytes()), encode(value.as_bytes()));
+    }
+	concat_exploiter_btreemap += "]";
+    let exploiter_btreemap = concat_exploiter_btreemap.as_str();
 
 	// deploy target contract to state
 	global_state.insert(
@@ -115,11 +126,26 @@ fn run_evm(target_bytecode: &str, exploiter_bytecode: &str, tx_data: &str) -> Ve
 	let after = executor.balance(H160::from_str(TARGET_ADDRESS).unwrap());
 	// println!("AFTER: {:?}", after);
 
+	// hashes private inputs with keccak256
+	let mut hasher = Keccak256::new();
+	let concatenated = format!(
+		"[{},{},{},{}]",
+		EXPLOITER_CONTRACT_EVM_PROGRAM,
+		EXPLOITER_ADDRESS,
+		CALLER_ADDRESS,
+		exploiter_btreemap
+	);
+	hasher.update(concatenated);
+	let hash = hasher.finalize();
+	let hash_str = hex::encode(hash.to_vec());
+	//println!("Hash as string: {}", hash_str);
+
 	// simulataion outputs: the before and after hack balance of ETH of the target
 	let mut outputs = Vec::new();
 	
 	outputs.push(before.to_string());
 	outputs.push(after.to_string());
+	outputs.push(hash_str);
 
 	outputs
 }
@@ -135,6 +161,7 @@ mod tests {
 		println!("Result: {:?}", result);
 		assert_eq!(result[0], "2000000000000000000"); // target should have 10 ethers before the exploit
 		assert_eq!(result[1], "0"); // target should have 0 after the exploit
+		assert_eq!(result[2], "9a68fde8bf1c116a2f268c7e838b8a561779dccf9d8284b7f9c1e06871fbecc5"); // hash of private inputs is correct
 	}
 
 }

@@ -6,7 +6,7 @@ fn main() {
     println!("Proving state change after hack tx...");
     let input = "63d9b770"; // exploit()
     let result = run_prover(input);
-    println!("Results: there's a certain tx that makes target contract eth balance go [from, to] = {:?}", result);
+    println!("Results: there's a certain tx that makes target contract eth balance go [from, to, private input hash] = {:?}", result);
 }
 
 fn run_prover(input: &str) -> Vec<String>{
