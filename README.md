@@ -3,7 +3,7 @@
 
 ![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/img.jpg?raw=true)
 
-zkPoEX (zk proof of exploit) aims to facilitate communication and collaboration between hackers and project owners in the decentralized finance (DeFi) space by enabling hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
+zkPoEX (zk proof of exploit) aims to facilitate communication and collaboration between security experts and project owners in the decentralized finance (DeFi) space by enabling white hat hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
 
 ## Problem
 
