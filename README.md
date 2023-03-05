@@ -24,8 +24,8 @@ Since the auditor is not giving away the exploit, the project is incentivized to
 
 The project utilizes the following technologies:
 
--   [SputnikVM](https://sputnikvm.com/): A high-performance, modular virtual machine for executing Ethereum smart contracts.
 -   [Risc0](https://risc-0.com/): A General Purpose Zero-Knowledge VM that allows to prove and verify any computation. The RISC Zero ZKVM is a verifiable computer that works like a real embedded RISC-V microprocessor, enabling programmers to write ZK proofs like they write any other code.
+-   [SputnikVM](https://sputnikvm.com/): A high-performance, modular virtual machine for executing Ethereum smart contracts.
 -   [Zero-Knowledge Proofs](https://en.wikipedia.org/wiki/Zero-knowledge_proof): A cryptographic technique that allows one party to prove to another party that a statement is true, without revealing any additional information beyond the fact that the statement is true.
 
 ## Installation and Setup
