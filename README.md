@@ -15,8 +15,10 @@ Our tooling allows auditors to safely generate a zero-knowledge proof of exploit
 
 Since the auditor is not giving away the exploit, the project is incentivized to work with the auditor to fix the vulnerability. This facilitates communication and collaboration between hackers and project owners for a more secure DeFi ecosystem.
 
-![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/diagram.png?raw=true)
+<p align="center">
 
+![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/diagram.png?raw=true)
+</p>
 
 ## Technologies Used
 
