@@ -37,7 +37,7 @@ To use the project, you will need to have the following installed on your system
 
 To test the evm :
 ```bash
-$ test-evm
+$ just test-evm
 ```
 To generate proof (and verify) :
 ```bash
