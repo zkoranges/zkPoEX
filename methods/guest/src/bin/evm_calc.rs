@@ -10,8 +10,9 @@ use evm_runner::run_simulation;
 risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
-    let input: String = env::read();
-    let result = run_simulation(&input);
+    let calldata: String = env::read();
+    let blockchain_settings: String = env::read();
+    let result = run_simulation(&calldata, &blockchain_settings);
     env::commit(&result);
 }
     
