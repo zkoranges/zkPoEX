@@ -43,6 +43,7 @@ To generate proof (and verify) :
 ```bash
 $ just prove
 ```
+Please note that this particular example requires at least 16gb of RAM and may take a long time depending on your hardware.
 
 ## Acknowledgements:
 
