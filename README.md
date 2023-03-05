@@ -1,11 +1,15 @@
-
+<style> 
+  .grey-section{
+    background: #f5f5f5; padding: 15px 20px;
+  } 
+</style>
 # zkPoEX
 
 ![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/img.jpg?raw=true)
 
 zkPoEX (zk proof of exploit) aims to facilitate communication and collaboration between security experts and project owners in the decentralized finance (DeFi) space by enabling white hat hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
 
-<div style="background: #f5f5f5; padding: 15px 20px;">
+<div class="grey-section">
 <h2 dir="auto">Problem</h2>
 
 Bug bounty programs in the DeFi space can be hard to run and maintain, not always honored, and may not always offer sufficient compensation for white hats. This can lead to a lack of incentive for hackers to report vulnerabilities, which can ultimately result in a less secure DeFi ecosystem.
