@@ -2,7 +2,7 @@
 
 ![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/img.jpg?raw=true)
 
-zkPoEX (zk proof of exploit) aims to facilitate communication and collaboration between security experts and project owners in the decentralized finance (DeFi) space by enabling white hat hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
+zkPoEX (zk proof of exploit) is a Proof-of-Concept developed at ETH Denver Hackathon with the aim to facilitate communication and collaboration between security experts and teams in the decentralized finance (DeFi) space by enabling white hat hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
 
 ## Problem
 
@@ -54,3 +54,13 @@ We would also like to thank [Daniel Lumi](https://www.twitter.com/zklumi) for ad
 ## Contributing
 
 Contributions to the project are welcome and encouraged. To contribute, fork the project on GitHub, make your changes, and submit a pull request.
+
+## Disclaimer
+
+zkPoEX is provided "as is" without any warranties.
+
+The purpose of zkPoEX is to promote responsible disclosure and encourage organizations to address security vulnerabilities in a timely and effective manner, thereby enhancing overall security.
+
+The developers and maintainers of the Tool disclaim all liability for any damages, losses, or harm resulting from the use or misuse of the Tool.
+
+For more information, read the [Disclaimer](https://github.com/zkoranges/zkPoEX/blob/main/DISCLAIMER.md)
