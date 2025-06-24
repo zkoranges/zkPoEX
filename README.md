@@ -2,65 +2,81 @@
 
 ![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/img.jpg?raw=true)
 
-zkPoEX (zk proof of exploit) is a Proof-of-Concept developed at ETH Denver Hackathon with the aim to facilitate communication and collaboration between security experts and teams in the decentralized finance (DeFi) space by enabling white hat hackers to report live vulnerabilities in smart contracts while maintaining the confidentiality of the exploit.
+## Personal Note
 
-## Problem
+After developing the original zkPoEX prototype during ETHDenver, I’ve since had to re-evaluate how best to allocate my time and focus across multiple professional commitments. As a result, the initial working prototype has been archived here: [https://github.com/zkoranges/zkPoEX_archive](https://github.com/zkoranges/zkPoEX_archive). Moving forward, this repository will evolve into a more refined and community-oriented resource based on the lessons and insights gained throughout the project.
 
-Bug bounty programs in the DeFi space can be hard to run and maintain, not always honored, and may not always offer sufficient compensation for white hats. This can lead to a lack of incentive for hackers to report vulnerabilities, which can ultimately result in a less secure DeFi ecosystem.
+**Want to contribute or discuss?** Send me a message on Twitter [@zkoranges](https://twitter.com/zkoranges) if you want to add something to this README.md or if you want to discuss specifics about zkPoEX implementations.
 
-## Solution
+## Overview
 
-Our tooling allows auditors to safely generate a zero-knowledge proof of exploit without revealing the actual exploit. With zero-knowledge proofs, the auditor can prove that they know of a transaction that can produce an undesirable change of state in certain contracts, without revealing the specifics of the exploit.
+zkPoEX (Zero-Knowledge Proof of Exploit) enables security researchers to prove they have discovered vulnerabilities in smart contracts while maintaining complete confidentiality of the exploit details. This revolutionary approach transforms vulnerability disclosure by allowing trustless verification of exploitability without revealing sensitive information that could be misused by malicious actors.
 
-Since the auditor is not giving away the exploit, the project is incentivized to work with the auditor to fix the vulnerability. This facilitates communication and collaboration between hackers and project owners for a more secure DeFi ecosystem.
+The technology addresses a critical challenge in the DeFi security ecosystem: bug bounty programs are often difficult to maintain, not always honored, and may not provide sufficient compensation for white hat hackers. This lack of incentive leads to unreported vulnerabilities, ultimately resulting in a less secure ecosystem.
 
-<div align="center" style="text-align: center;">
+## Key Benefits
 
-![zkPoEX](https://github.com/zkoranges/zkPoEX/blob/main/diagram.png?raw=true)
-</div>
+**Privacy-Preserving Disclosure**: Prove exploit existence without revealing implementation details, protecting both researchers and projects
 
-## Technologies Used
+**Trustless Verification**: Enable automated reward systems and immediate response mechanisms upon proof verification
 
-The project utilizes the following technologies:
+**Incentive Alignment**: Encourage responsible disclosure through guaranteed, automated compensation mechanisms
 
--   [Risc0](https://risc-0.com/): A General Purpose Zero-Knowledge VM that allows to prove and verify any computation. The RISC Zero ZKVM is a verifiable computer that works like a real embedded RISC-V microprocessor, enabling programmers to write ZK proofs like they write any other code.
--   [SputnikVM](https://sputnikvm.com/): A high-performance, modular virtual machine for executing Ethereum smart contracts.
--   [Zero-Knowledge Proofs](https://en.wikipedia.org/wiki/Zero-knowledge_proof): A cryptographic technique that allows one party to prove to another party that a statement is true, without revealing any additional information beyond the fact that the statement is true.
+**Enhanced Security**: Foster better collaboration between security researchers and project teams by eliminating disclosure risks
 
-## Installation and Setup
+## Current Leading Implementations
 
-To use the project, you will need to have the following installed on your system:
+### SecurFi/zkProver
+The SecurFi zkProver represents one of the most comprehensive toolkits currently available, built on RISC Zero with support for multiple platforms including Linux and macOS with Apple Silicon. The system offers hardware acceleration through CUDA and Metal and focuses specifically on Ethereum smart contracts with advanced EVM integration.
 
-- [Rust](https://www.rust-lang.org/tools/install)
-- [Solc](https://docs.soliditylang.org/en/v0.8.17/installing-solidity.html)
-- [Just](https://github.com/casey/just)
+**Repository**: [https://github.com/SecurFi/zkProver](https://github.com/SecurFi/zkProver)
 
-To test the evm :
-```bash
-$ just test-evm
-```
-To generate proof (and verify) :
-```bash
-$ just prove
-```
-Please note that this particular example requires at least 16gb of RAM and may take a long time depending on your hardware.
+**Key Features**:
+- Cross-platform support with hardware acceleration
+- EVM-focused exploit proving capabilities
+- Integration with existing Ethereum development tools
+- Command-line interface for streamlined proof generation
 
-## Acknowledgements:
+### ziemen4/zkpoex
+This implementation takes a structured approach, built as a Rust-based toolkit specifically designed for Ethereum smart contracts. The project is organized as a Cargo workspace with four main components: host, methods, evm-runner, and sc-owner.
 
-We would like to thank Maciej Zieliński for providing an example in his [blog post](https://odra.dev/blog/evm-at-risc0/) of how to run Solidity code inside SputnikVM inside Risc0. 
-We would also like to thank [Daniel Lumi](https://www.twitter.com/zklumi) for advising us in this project. 
+**Repository**: [https://github.com/ziemen4/zkpoex](https://github.com/ziemen4/zkpoex)
 
+**Technical Architecture**:
+- Uses RISC Zero as the underlying zkVM
+- Implements comprehensive EVM integration for proving
+- Modular design with clear separation of concerns
+- Supports trustless bug bounties with automatic reward claiming
 
-## Contributing
+## Academic and Research Context
 
-Contributions to the project are welcome and encouraged. To contribute, fork the project on GitHub, make your changes, and submit a pull request.
+The field benefits from significant academic contributions, particularly from Trail of Bits and Johns Hopkins University through DARPA-funded research. Trail of Bits has developed specialized tools and comprehensive documentation through their ZKDocs project, addressing common implementation issues in cryptographic protocols.
 
-## Disclaimer
+Recent academic work includes the CHEESECLOTH system, which presents a novel proof-statement compiler for proving practical vulnerabilities in zero-knowledge. This system has successfully generated ZK proofs for well-known vulnerabilities including the Heartbleed information leakage in OpenSSL.
 
-zkPoEX is provided "as is" without any warranties.
+## Resources for Further Development
 
-The purpose of zkPoEX is to promote responsible disclosure and encourage organizations to address security vulnerabilities in a timely and effective manner, thereby enhancing overall security.
+### Technical Documentation
+- [RISC Zero Developer Documentation](https://dev.risczero.com/api/)
+- [Zero-Knowledge Proofs: An Illustrated Primer](https://blog.cryptographyengineering.com/2014/11/27/zero-knowledge-proofs-illustrated-primer/)
+- [zkVM Technical Specification](https://dev.risczero.com/api/zkvm/zkvm-specification)
 
-The developers and maintainers of the Tool disclaim all liability for any damages, losses, or harm resulting from the use or misuse of the Tool.
+### Security Analysis
+- [Specialized Zero-Knowledge Proof Failures](https://blog.trailofbits.com/2022/11/29/specialized-zero-knowledge-proof-failures/)
+- [Zero-Knowledge Proof Vulnerability Analysis](https://eprint.iacr.org/2024/514.pdf)
 
-For more information, read the [Disclaimer](https://github.com/zkoranges/zkPoEX/blob/main/DISCLAIMER.md)
+### Community Resources
+- [Awesome Zero-Knowledge Proofs](https://github.com/matter-labs/awesome-zero-knowledge-proofs)
+- [ZK Proof Community](https://docs.zkproof.org/)
+
+## Get in Touch
+
+Have ideas, feedback, or want to contribute to this resource? **Send me a message on Twitter [@zkoranges](https://twitter.com/zkoranges)** – I'd love to hear from you and discuss how we can make this resource even better for the zkPoEX community.
+
+---
+
+**Original Prototype**: The working prototype that won at ETHDenver has been preserved at [https://github.com/zkoranges/zkPoEX_archive](https://github.com/zkoranges/zkPoEX_archive) for reference and historical context.
+
+**License**: MIT License - See individual project repositories for specific licensing terms.
+
+**Disclaimer**: zkPoEX implementations are experimental and provided for educational and research purposes only. They are not intended for production use without comprehensive security audits. Users are solely responsible for ensuring their use of this code complies with all applicable laws and regulations in their jurisdiction. Always act responsibly and respect the law.
