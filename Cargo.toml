@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = ["core/*", "lib/*", "bin/*", "guests"]
+exclude = ["guests/exploit"]
+
+[workspace.dependencies]
+# Core
+alloy-primitives = { version = "0.8.14", default-features = false, features = ["std", "serde", "rlp"] }
+revm = { version = "19.0.0", default-features = false }
+rkyv = { version = "0.7.45", features = ["validation", "std", "size_32"] }
+serde = { version = "1", features = ["derive"] }
+sha2 = "0.10"
+
+# ZK
+risc0-build = "3.0.4"
+risc0-zkvm = { version = "3.0.4", default-features = false }
+
+# Host
+reqwest = { version = "0.12", features = ["json"] }
+tokio = { version = "1", features = ["macros", "rt", "rt-multi-thread"] }
+futures = "0.3"
+flate2 = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+bincode = "1"
+indicatif = "0.17"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-indicatif = "0.3"
+ctrlc = "3"
+dirs-next = "2"
+toml = "0.8"
+url = "2"
+serde_json = "1"
+
+# Common
+anyhow = "1"
+hex-literal = "0.4"
+
+# No [patch.crates-io] needed for risc0 3.0.4+

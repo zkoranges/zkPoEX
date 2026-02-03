@@ -1,0 +1,34 @@
+[package]
+name = "zkpoex-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "zkpoex"
+path = "src/main.rs"
+
+[dependencies]
+host-utils = { path = "../../lib/host-utils" }
+bridge-types = { path = "../../core/bridge-types" }
+bridge-logic = { path = "../../core/bridge-logic" }
+guests = { path = "../../guests" }
+clap = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+risc0-zkvm = { workspace = true, features = ["client"] }
+hex = "0.4"
+dirs-next = { workspace = true }
+ctrlc = { workspace = true }
+indicatif = { workspace = true }
+toml = { workspace = true }
+alloy-primitives = { workspace = true, features = ["serde"] }
+revm = { workspace = true }
+
+[features]
+metal = ["risc0-zkvm/metal"]
+cuda = ["risc0-zkvm/cuda"]

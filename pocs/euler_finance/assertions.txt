@@ -1,0 +1,8 @@
+no-deals
+
+# Euler main drained of DAI at the fork point.
+erc20:0x6B175474E89094C44Da98b954EedeAC495271d0F:0x27182842E098f60e3D576794A5bFFb0777E025d3:8904507348306697267428294:0:0x2
+
+# Unprivileged caller ends with the profit.
+# (Profit = Euler's starting DAI balance - Aave flashloan premium.)
+erc20:0x6B175474E89094C44Da98b954EedeAC495271d0F:0x000000000000000000000000000000000000add1:0:8877507348306697267428294:0x2

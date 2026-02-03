@@ -1,0 +1,11 @@
+[package]
+name = "bridge-types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hex-literal = { workspace = true }
+rkyv = { workspace = true }
+serde = { workspace = true }
+sha2 = { workspace = true }
+alloy-primitives = { workspace = true }

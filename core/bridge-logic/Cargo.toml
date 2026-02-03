@@ -1,0 +1,15 @@
+[package]
+name = "bridge-logic"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["std"]
+std = ["revm/std", "serde/std"]
+
+[dependencies]
+bridge-types = { path = "../bridge-types" }
+revm = { workspace = true }
+serde = { workspace = true }
+alloy-primitives = { workspace = true }
+anyhow = { workspace = true }
