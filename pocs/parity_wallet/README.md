@@ -19,7 +19,8 @@ The PoC reproduces the **full exploit sequence in a single transaction**:
 `pocs/parity_wallet/assertions.txt` contains the minimal public claims:
 - No deals
 - Wallet balance goes to zero
-- Caller balance increases by the full drained amount
+- Caller balance increases to the drained amount **plus** the tool’s fixed “gas funding” seed.
+  Note: assertions use the *proven on-chain pre-state* for the caller (which is zero at this block), not the seeded balance.
 
 ## Prove
 
