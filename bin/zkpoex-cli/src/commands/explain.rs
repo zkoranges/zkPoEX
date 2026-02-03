@@ -175,6 +175,7 @@ pub async fn run(args: ExplainArgs, json_output: bool) -> Result<()> {
             code: Some(poc_bytecode),
         },
     );
+    db.allow_missing_storage_for(contract_addr);
 
     db.accounts.insert(
         caller_addr,
@@ -185,6 +186,7 @@ pub async fn run(args: ExplainArgs, json_output: bool) -> Result<()> {
             code: Some(Bytecode::default()),
         },
     );
+    db.allow_missing_storage_for(caller_addr);
 
     db.apply_deals(&deals);
 

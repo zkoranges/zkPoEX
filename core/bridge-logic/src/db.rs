@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::convert::Infallible;
 
 use alloy_primitives::{Address, Bytes, B256, U256};
@@ -16,6 +16,11 @@ pub struct MutableMemDB {
     pub storage: BTreeMap<Address, BTreeMap<U256, U256>>,
     pub block_hashes: BTreeMap<u64, B256>,
     pub codes: BTreeMap<B256, Bytes>,
+    /// Addresses for which missing storage reads should return 0 even in strict mode.
+    ///
+    /// This is used for "synthetic" accounts (e.g., injected PoC contract) whose
+    /// storage is not part of the authenticated chain pre-state.
+    allow_missing_storage: BTreeSet<Address>,
     strict_missing: bool,
 }
 
@@ -66,6 +71,7 @@ impl MutableMemDB {
             storage: storage_map,
             block_hashes,
             codes,
+            allow_missing_storage: BTreeSet::new(),
             strict_missing: false,
         }
     }
@@ -75,6 +81,11 @@ impl MutableMemDB {
         let mut db = Self::from_rkyv(db);
         db.strict_missing = true;
         db
+    }
+
+    /// Allow missing storage reads for `address` (returning 0) even in strict mode.
+    pub fn allow_missing_storage_for(&mut self, address: Address) {
+        self.allow_missing_storage.insert(address);
     }
 
     /// Apply balance overrides (deals) to the database.
@@ -128,6 +139,9 @@ impl DatabaseRef for MutableMemDB {
                 Some(value) => Ok(*value),
                 None => {
                     if self.strict_missing {
+                        if self.allow_missing_storage.contains(&address) {
+                            return Ok(U256::ZERO);
+                        }
                         panic!("Accessing unproven storage slot: {:?} {:?}", address, index);
                     }
                     Ok(U256::ZERO)
@@ -135,6 +149,9 @@ impl DatabaseRef for MutableMemDB {
             },
             None => {
                 if self.strict_missing {
+                    if self.allow_missing_storage.contains(&address) {
+                        return Ok(U256::ZERO);
+                    }
                     panic!("Accessing unproven storage account: {:?}", address);
                 }
                 Ok(U256::ZERO)
