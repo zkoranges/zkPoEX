@@ -20,5 +20,8 @@ Thumbs.db
 *.proof
 .zkpoex/
 
+# Runs
+runs/
+
 # Claude
 .claude/
